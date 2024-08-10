@@ -5,9 +5,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class DemoApplicationTests {
@@ -80,6 +84,35 @@ class DemoApplicationTests {
 		assertThrows(IllegalArgumentException.class, () -> {
 			Integer.valueOf(str);
 		});
+	}
+
+	@Test
+	void mockAndVerify() {
+		List<String> mockedList = mock(List.class);
+
+		mockedList.add("one");
+		mockedList.add("two");
+		mockedList.add("two");
+		mockedList.add("three");
+		verify(mockedList).add("three");
+
+		verify(mockedList, times(2)).add("two");
+		verify(mockedList, atLeastOnce()).add("three");
+		verify(mockedList, atMost(3)).add("one");
+	}
+
+	@Test
+	void spyAndStub() {
+		List<String> list = new ArrayList<>();
+		List<String> spiedList = spy(list);
+		spiedList.add("one");
+		spiedList.add("two");
+		spiedList.add("three");
+		assertEquals(3, spiedList.size());
+
+		when(spiedList.get(0)).thenReturn("first");
+		assertEquals("first", spiedList.get(0));
+		assertEquals("two", spiedList.get(1));
 	}
 
 }
